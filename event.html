@@ -3,7 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Proxiland Event</title>
+<title>You're invited · Proxiland</title>
+<meta name="description" content="You're invited to an event on Proxiland. Tap to see the details and join.">
+<meta property="og:title" content="You're invited to an event on Proxiland">
+<meta property="og:description" content="Tap to see the details and join.">
+<meta property="og:image" content="https://mingjzhu01.github.io/proxiland-privacy/brand-mark.png">
+<meta property="og:type" content="website">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Yeseva+One&display=swap" rel="stylesheet">
@@ -96,6 +101,17 @@
     border-radius: 12px;
     margin: 20px 0 8px;
   }
+  .cta.secondary { background: var(--surface); color: var(--ink); border: 1px solid var(--rule); margin: 12px 0 0; }
+  .code-box {
+    background: var(--surface);
+    border: 1px solid var(--rule);
+    border-radius: 16px;
+    padding: 16px;
+    margin-top: 12px;
+    text-align: center;
+  }
+  .code { font-size: 28px; font-weight: 700; letter-spacing: 0.18em; margin: 4px 0 6px; user-select: all; -webkit-user-select: all; }
+  .hint { font-size: 13px; line-height: 1.5; color: var(--text-secondary); margin: 0; }
   .fallback {
     background: var(--surface-sunken);
     border: 1px solid var(--rule);
@@ -179,6 +195,7 @@
 
     async function main() {
       const token = qs('t');
+      const code = qs('c');
       if (!token) {
         renderMessage("This link isn't valid", 'Ask the organiser for the invitation link again.');
         return;
@@ -239,9 +256,17 @@
 
       if (!isEnded) {
         html += '<a class="cta" href="' + deepLink + '">Open in Proxiland</a>';
+        if (code) {
+          html += '<div class="code-box">';
+          html += '<p class="detail-label">Event code</p>';
+          html += '<p class="code">' + escapeHtml(code) + '</p>';
+          html += '<p class="hint">Or open Proxiland → Events → Join and enter this code.</p>';
+          html += '</div>';
+        }
         html += '<div class="fallback">';
-        html += '<p><strong>Don’t have the app yet?</strong></p>';
-        html += '<p>Proxiland is currently invite-only via TestFlight. Ask the organiser to add you, install the app from the TestFlight invite they send, then come back to this link or use the event code they give you.</p>';
+        html += '<p><strong>Don’t have Proxiland yet?</strong></p>';
+        html += '<p>Get it free on the App Store and sign in, then come back here and tap “Open in Proxiland”' + (code ? ', or enter the event code' : '') + '.</p>';
+        html += '<a class="cta secondary" href="https://apps.apple.com/app/id6792620813">Get Proxiland on the App Store</a>';
         html += '</div>';
       }
 
