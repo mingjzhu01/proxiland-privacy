@@ -157,6 +157,8 @@
     const SUPABASE_URL = 'https://dhfqmhmaefeqeqzkwpsf.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRoZnFtaG1hZWZlcWVxemt3cHNmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQzNjUzMzksImV4cCI6MjA5OTk0MTMzOX0.tCKJFUg_BS2omGMlrBogVb6h0zdIIYh8e4oncLNV9dc';
 
+    const APP_STORE_URL = 'https://apps.apple.com/app/id6792620813';
+
     function qs(name) {
       return new URLSearchParams(window.location.search).get(name);
     }
@@ -255,7 +257,7 @@
       }
 
       if (!isEnded) {
-        html += '<a class="cta" href="' + deepLink + '">Open in Proxiland</a>';
+        html += '<a class="cta" id="open-app" href="' + deepLink + '">Open in Proxiland</a>';
         if (code) {
           html += '<div class="code-box">';
           html += '<p class="detail-label">Event code</p>';
@@ -276,6 +278,24 @@
       html += '</div>';
 
       render(html);
+
+      // No app yet? Tapping "Open in Proxiland" goes to the App Store instead (Ming, 19 Nov). Try
+      // the app; if the page is still on screen a moment later, the app isn't installed.
+      const openBtn = document.getElementById('open-app');
+      if (openBtn) {
+        openBtn.addEventListener('click', function (e) {
+          e.preventDefault();
+          let left = false;
+          const onHide = function () { if (document.visibilityState === 'hidden') left = true; };
+          document.addEventListener('visibilitychange', onHide);
+          window.addEventListener('pagehide', function () { left = true; });
+          setTimeout(function () {
+            document.removeEventListener('visibilitychange', onHide);
+            if (!left) window.location.href = APP_STORE_URL;
+          }, 1500);
+          window.location.href = deepLink;
+        });
+      }
     }
 
     main();
