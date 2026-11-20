@@ -89,6 +89,8 @@
   }
   .detail-value { font-size: 14.5px; line-height: 1.5; margin: 0 0 14px; }
   .detail-value:last-child { margin-bottom: 0; }
+  .detail-value.has-map { margin-bottom: 4px; }
+  .map-link { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 600; color: var(--brand); text-decoration: underline; text-underline-offset: 3px; }
   .cta {
     display: block;
     text-align: center;
@@ -245,13 +247,20 @@
       const details = [];
       if (when) details.push(['When', when]);
       if (event.venue_name || event.venue_address) {
-        details.push(['Where', [event.venue_name, event.venue_address].filter(Boolean).join(' — ')]);
+        // "Open in Maps" (Ming, 20 Nov) only with a street address: a bare name like "Rania's"
+        // could match the wrong place. Google Maps opens its app if installed, the web otherwise.
+        const mapUrl = event.venue_address
+          ? 'https://www.google.com/maps/search/?api=1&query=' +
+            encodeURIComponent([event.venue_name, event.venue_address].filter(Boolean).join(', '))
+          : null;
+        details.push(['Where', [event.venue_name, event.venue_address].filter(Boolean).join(' — '), mapUrl]);
       }
       if (details.length > 0) {
         html += '<div class="card">';
-        details.forEach(([label, value], i) => {
+        details.forEach(([label, value, mapUrl]) => {
           html += '<p class="detail-label">' + escapeHtml(label) + '</p>';
-          html += '<p class="detail-value">' + escapeHtml(value) + '</p>';
+          html += '<p class="detail-value' + (mapUrl ? ' has-map' : '') + '">' + escapeHtml(value) + '</p>';
+          if (mapUrl) html += '<p class="detail-value"><a class="map-link" href="' + escapeHtml(mapUrl) + '" target="_blank" rel="noopener">Open in Maps</a></p>';
         });
         html += '</div>';
       }
